@@ -1,0 +1,102 @@
+image: docker:git
+
+services:
+  - docker:dind
+
+stages:
+  - build_image
+  - tag_latest
+
+before_script:
+  - docker login -u "${CI_REGISTRY_USER}" -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
+
+###
+## BUILD IMAGE
+#
+# Default branches (master/dev)
+build_image.default:
+  stage: build_image
+  script:
+    - docker build --pull
+      --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
+      --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
+      --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
+      -t "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME}" .
+    - docker push "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME}"
+  only:
+    - master
+    - dev
+  except:
+    - tags
+  tags:
+    - tractor
+
+# Issue branches (^[0-9]+-.*])
+# Strip branch name branch ID
+build_image.feature:
+  stage: build_image
+  script:
+    - docker build --pull
+      --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
+      --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
+      --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
+      -t "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME%%-*}" .
+    - docker push "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME%%-*}"
+  only:
+    - /^[0-9]+-.*$/
+  except:
+    - tags
+  tags:
+    - tractor
+
+# Non Standard branches (^[a-zA-Z]+.*)
+# Strip branch name to 128 char max
+build_image.nonstd:
+  stage: build_image
+  script:
+    - docker build --pull
+      --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
+      --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
+      --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
+      -t "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME:0:128}" .
+    - docker push "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME:0:128}"
+  only:
+    - /^[a-zA-Z]+.*$/
+  except:
+    - master
+    - dev
+    - tags
+  tags:
+    - tractor
+
+# TAGS
+build_image.tag:
+  stage: build_image
+  script:
+    - docker build --pull
+      --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
+      --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
+      --build-arg BUILD_VCSREF="${CI_COMMIT_REF_NAME}"
+      -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}" .
+    - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+  only:
+    - tags
+  tags:
+    - tractor
+
+###
+## TAG IMAGE
+#
+# Tag latest on master branch
+tag_image.latest:
+  stage: tag_latest
+  script:
+    - docker pull "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME}"
+    - docker tag "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME}" "${CI_REGISTRY_IMAGE}:latest"
+    - docker push "${CI_REGISTRY_IMAGE}:latest"
+  only:
+    - master
+  except:
+    - tags
+  tags:
+    - tractor
