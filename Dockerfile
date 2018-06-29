@@ -10,7 +10,7 @@ RUN wget --no-check-certificate https://release.larsjung.de/h5ai/h5ai-${H5AI_VER
 COPY class-setup.php.patch class-setup.php.patch
 RUN patch -p1 -u -d /usr/share/h5ai/_h5ai/private/php/core/ -i /class-setup.php.patch && rm class-setup.php.patch
 
-FROM alpine:latest
+FROM alpine:3.6
 
 LABEL maintainer "benj.saiz@gmail.com"
 
