@@ -1,31 +1,40 @@
-FROM alpine:latest as downloader
+FROM node:slim as builder
 
 ARG H5AI_VERSION=0.29.0
 
-RUN apk update && apk add --no-cache nginx zip unzip wget patch
+RUN apt-get update \
+ && apt-get --no-install-recommends -y install \
+            git-core \
+            patch \
+ && git clone https://github.com/lrsjng/h5ai.git \
+ && cd h5ai \
+ && git checkout -b ${H5AI_VERSION} tags/v${H5AI_VERSION} \
+ && npm install \
+ && npm audit fix \
+ && npm run build
 
-RUN wget --no-check-certificate https://release.larsjung.de/h5ai/h5ai-${H5AI_VERSION}.zip && \
-    unzip h5ai-${H5AI_VERSION}.zip -d /usr/share/h5ai
+COPY class-setup.php.patch /class-setup.php.patch
+RUN patch -p1 -u -d /h5ai/build/_h5ai/private/php/core/ -i /class-setup.php.patch \
+ && rm /class-setup.php.patch
 
-COPY class-setup.php.patch class-setup.php.patch
-RUN patch -p1 -u -d /usr/share/h5ai/_h5ai/private/php/core/ -i /class-setup.php.patch && rm class-setup.php.patch
-
-FROM alpine:latest
+FROM alpine:3.7
 
 LABEL maintainer "benj.saiz@gmail.com"
 
 RUN apk add --no-cache \
-    nginx ffmpeg graphicsmagick \
-    php7-fpm php7-curl php7-iconv php7-xml php7-dom php7-json php7-zlib php7-session php7-gd
+    nginx \
+    ffmpeg \
+    graphicsmagick \
+    php7-fpm php7-curl php7-iconv php7-xml php7-dom php7-json php7-zip php7-session php7-gd
 
-COPY --from=downloader /usr/share/h5ai /usr/share/h5ai
+COPY --from=builder /h5ai/build/_h5ai /usr/share/h5ai/_h5ai
 
-COPY php-fpm.conf     /etc/php7/php-fpm.conf
-COPY nginx.conf       /etc/nginx/nginx.conf
-COPY entrypoint.sh    /entrypoint.sh
+COPY slash/     /
 
-RUN chown nginx:www-data /usr/share/h5ai/_h5ai/public/cache/ && \
-    chown nginx:www-data /usr/share/h5ai/_h5ai/private/cache/
+RUN sed -i '/txt;$/ a text/plain cfg;' /etc/nginx/mime.types \ 
+ && sed -i '/txt;$/ a text/plain ini;' /etc/nginx/mime.types \ 
+ && chown nginx:www-data /usr/share/h5ai/_h5ai/public/cache/ \
+ && chown nginx:www-data /usr/share/h5ai/_h5ai/private/cache/
 
 EXPOSE 80
 
