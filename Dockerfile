@@ -33,6 +33,7 @@ COPY slash/     /
 
 RUN sed -i '/txt;$/ a text/plain cfg;' /etc/nginx/mime.types \ 
  && sed -i '/txt;$/ a text/plain ini;' /etc/nginx/mime.types \ 
+ && sed -i '/txt;$/ a text/plain nfo;' /etc/nginx/mime.types \ 
  && chown nginx:www-data /usr/share/h5ai/_h5ai/public/cache/ \
  && chown nginx:www-data /usr/share/h5ai/_h5ai/private/cache/
 
