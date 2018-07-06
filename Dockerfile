@@ -17,7 +17,7 @@ COPY class-setup.php.patch /class-setup.php.patch
 RUN patch -p1 -u -d /h5ai/build/_h5ai/private/php/core/ -i /class-setup.php.patch \
  && rm /class-setup.php.patch
 
-FROM alpine:3.7
+FROM alpine:3.8
 
 LABEL maintainer "benj.saiz@gmail.com"
 
