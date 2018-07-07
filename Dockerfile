@@ -31,10 +31,7 @@ COPY --from=builder /h5ai/build/_h5ai /usr/share/h5ai/_h5ai
 
 COPY slash/     /
 
-RUN sed -i '/txt;$/ a text/plain cfg;' /etc/nginx/mime.types \
- && sed -i '/txt;$/ a text/plain ini;' /etc/nginx/mime.types \
- && sed -i '/txt;$/ a text/plain nfo;' /etc/nginx/mime.types \ 
- && ln -sf /dev/stderr /var/log/fpm-php.www.log \
+RUN ln -sf /dev/stderr /var/log/fpm-php.www.log \
  && ln -sf /dev/stdout /var/log/nginx/access.log \
  && ln -sf /dev/stderr /var/log/nginx/error.log \
  && chown nginx:www-data /usr/share/h5ai/_h5ai/public/cache/ \
