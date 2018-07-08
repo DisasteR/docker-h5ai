@@ -30,6 +30,7 @@ LABEL maintainer="pad92" \
       org.label-schema.schema-version="1.0"
 
 RUN apk add --no-cache \
+    curl \
     nginx \
     ffmpeg \
     graphicsmagick \
@@ -48,3 +49,4 @@ RUN ln -sf /dev/stderr /var/log/fpm-php.www.log \
 EXPOSE 80
 
 CMD ["/entrypoint.sh"]
+HEALTHCHECK CMD curl --fail http://localhost/ || exit 1
