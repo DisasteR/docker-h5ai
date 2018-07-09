@@ -9,7 +9,7 @@ types {
     application/rss+xml                              rss;
 
     text/mathml                                      mml;
-    text/plain                                       txt nfo ini;
+    text/plain                                       txt nfo ini cfg;
     text/markdown                                    md;
     text/vnd.sun.j2me.app-descriptor                 jad;
     text/vnd.wap.wml                                 wml;
