@@ -1,3 +1,4 @@
+
 FROM node:slim as builder
 
 ARG H5AI_VERSION=0.29.0
@@ -19,12 +20,14 @@ RUN patch -p1 -u -d /h5ai/build/_h5ai/private/php/core/ -i /class-setup.php.patc
 
 FROM alpine:3.8
 
+ARG H5AI_VERSION=0.29.0
+
 LABEL maintainer="pad92" \
       org.label-schema.url="https://github.com/pad92/docker-h5ai/blob/master/README.md" \
       org.label-schema.build-date=$BUILD_DATE \
       org.label-schema.version=$H5AI_VERSION \
       org.label-schema.vcs-url="https://github.com/pad92/docker-h5ai.git" \
-      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.vcs-ref=$BUILD_VCSREF \
       org.label-schema.docker.dockerfile="/Dockerfile" \
       org.label-schema.description="h5ai on alpine docker image" \
       org.label-schema.schema-version="1.0"
