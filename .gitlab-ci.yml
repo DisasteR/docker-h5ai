@@ -28,8 +28,6 @@ build_image.default:
     - dev
   except:
     - tags
-  tags:
-    - tractor
 
 # Issue branches (^[0-9]+-.*])
 # Strip branch name branch ID
@@ -46,8 +44,6 @@ build_image.feature:
     - /^[0-9]+-.*$/
   except:
     - tags
-  tags:
-    - tractor
 
 # Non Standard branches (^[a-zA-Z]+.*)
 # Strip branch name to 128 char max
@@ -66,8 +62,6 @@ build_image.nonstd:
     - master
     - dev
     - tags
-  tags:
-    - tractor
 
 # TAGS
 build_image.tag:
@@ -81,8 +75,6 @@ build_image.tag:
     - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
   only:
     - tags
-  tags:
-    - tractor
 
 ###
 ## TAG IMAGE
@@ -98,5 +90,3 @@ tag_image.latest:
     - master
   except:
     - tags
-  tags:
-    - tractor
