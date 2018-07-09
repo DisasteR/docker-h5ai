@@ -1,7 +1,7 @@
 
 FROM node:slim as builder
 
-ARG H5AI_VERSION=0.29.0
+ENV H5AI_VERSION=0.29.0
 
 RUN apt-get update \
  && apt-get --no-install-recommends -y install \
@@ -19,8 +19,6 @@ RUN patch -p1 -u -d /h5ai/build/_h5ai/private/php/core/ -i /class-setup.php.patc
  && rm /class-setup.php.patch
 
 FROM alpine:3.8
-
-ARG H5AI_VERSION=0.29.0
 
 LABEL maintainer="pad92" \
       org.label-schema.url="https://github.com/pad92/docker-h5ai/blob/master/README.md" \
@@ -52,4 +50,4 @@ RUN ln -sf /dev/stderr /var/log/fpm-php.www.log \
 EXPOSE 80
 
 CMD ["/entrypoint.sh"]
-HEALTHCHECK CMD curl --fail http://localhost/ || exit 1
+HEALTHCHECK CMD curl -I --fail http://localhost/ || exit 1
