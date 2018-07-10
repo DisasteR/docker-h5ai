@@ -1,4 +1,3 @@
-
 FROM node:slim as builder
 
 ENV H5AI_VERSION=0.29.0
@@ -41,7 +40,7 @@ COPY --from=builder /h5ai/build/_h5ai /usr/share/h5ai/_h5ai
 
 COPY slash/     /
 
-RUN ln -sf /dev/stderr /var/log/fpm-php.www.log \
+RUN ln -sf /dev/stderr /var/log/php7/error.log \
  && ln -sf /dev/stdout /var/log/nginx/access.log \
  && ln -sf /dev/stderr /var/log/nginx/error.log \
  && chown nginx:www-data /usr/share/h5ai/_h5ai/public/cache/ \
