@@ -21,11 +21,10 @@ build_image.default:
       --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
       --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
       --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
-      -t "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME}" .
-    - docker push "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME}"
+      -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}" .
+    - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
   only:
     - master
-    - dev
   except:
     - tags
 
