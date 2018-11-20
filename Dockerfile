@@ -34,8 +34,18 @@ RUN apk add --no-cache \
     nginx \
     ffmpeg \
     graphicsmagick \
-    php7-fpm php7-curl php7-iconv php7-xml php7-dom php7-json php7-zip php7-session php7-gd
-
+    php7 \
+	php7-fileinfo \
+	php7-fpm \
+	php7-json \
+	php7-mbstring \
+	php7-openssl \
+	php7-session \
+	php7-simplexml \
+	php7-xml \
+	php7-xmlwriter \
+	php7-zlib
+    
 COPY --from=builder /h5ai/build/_h5ai /usr/share/h5ai/_h5ai
 
 COPY slash/     /
