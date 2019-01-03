@@ -35,6 +35,7 @@ RUN apk add --no-cache \
     php7 \
     php7-fileinfo \
     php7-fpm \
+    php7-imagick \
     php7-json \
     php7-mbstring \
     php7-openssl \
@@ -43,6 +44,7 @@ RUN apk add --no-cache \
     php7-xml \
     php7-xmlwriter \
     php7-zlib
+
 
 COPY --from=builder /h5ai/build/_h5ai /usr/share/h5ai/_h5ai
 
