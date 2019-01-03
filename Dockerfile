@@ -47,7 +47,8 @@ RUN apk add --no-cache \
     php7-xml \
     php7-xmlwriter \
     php7-zlib \
-    zip
+    zip \
+    supervisor
 
 COPY --from=builder /h5ai/build/_h5ai /usr/share/h5ai/_h5ai
 
@@ -61,5 +62,5 @@ RUN ln -sf /dev/stderr /var/log/php7/error.log \
 
 EXPOSE 80
 
-CMD ["/entrypoint.sh"]
+CMD supervisord -c /etc/supervisor/conf.d/supervisord.conf
 HEALTHCHECK CMD curl -I --fail http://localhost/ || exit 1
