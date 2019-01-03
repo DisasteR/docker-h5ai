@@ -31,10 +31,13 @@ LABEL maintainer="pad92" \
 
 RUN apk add --no-cache \
     curl \
+    ffmpeg \
     nginx \
     php7 \
+    php7-exif \
     php7-fileinfo \
     php7-fpm \
+    php7-gd \
     php7-imagick \
     php7-json \
     php7-mbstring \
@@ -43,8 +46,8 @@ RUN apk add --no-cache \
     php7-simplexml \
     php7-xml \
     php7-xmlwriter \
-    php7-zlib
-
+    php7-zlib \
+    zip
 
 COPY --from=builder /h5ai/build/_h5ai /usr/share/h5ai/_h5ai
 
