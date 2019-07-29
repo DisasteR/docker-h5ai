@@ -1,6 +1,6 @@
 FROM node:slim as builder
 
-ENV H5AI_VERSION=0.29.0
+ENV H5AI_VERSION=0.29.2
 
 RUN apt-get update \
  && apt-get --no-install-recommends -y install \
@@ -10,14 +10,13 @@ RUN apt-get update \
  && cd h5ai \
  && git checkout -b ${H5AI_VERSION} tags/v${H5AI_VERSION} \
  && npm install \
- && npm audit fix \
  && npm run build
 
 COPY class-setup.php.patch /class-setup.php.patch
 RUN patch -p1 -u -d /h5ai/build/_h5ai/private/php/core/ -i /class-setup.php.patch \
  && rm /class-setup.php.patch
 
-FROM alpine:3.9
+FROM alpine:3.10.1
 
 LABEL maintainer="pad92" \
       org.label-schema.url="https://github.com/pad92/docker-h5ai/blob/master/README.md" \
