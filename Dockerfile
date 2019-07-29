@@ -16,7 +16,7 @@ COPY class-setup.php.patch /class-setup.php.patch
 RUN patch -p1 -u -d /h5ai/build/_h5ai/private/php/core/ -i /class-setup.php.patch \
  && rm /class-setup.php.patch
 
-FROM alpine:3.10.1
+FROM nginx:stable-alpine
 
 LABEL maintainer="pad92" \
       org.label-schema.url="https://github.com/pad92/docker-h5ai/blob/master/README.md" \
@@ -29,15 +29,17 @@ LABEL maintainer="pad92" \
       org.label-schema.schema-version="1.0"
 
 RUN apk add --no-cache \
+    apache2-utils \
     curl \
     ffmpeg \
-    nginx \
+    imagemagick \
     php7 \
     php7-exif \
     php7-fileinfo \
     php7-fpm \
     php7-gd \
     php7-imagick \
+    php7-intl \
     php7-json \
     php7-mbstring \
     php7-openssl \
@@ -45,9 +47,10 @@ RUN apk add --no-cache \
     php7-simplexml \
     php7-xml \
     php7-xmlwriter \
-    php7-zlib \
-    zip \
-    supervisor
+    php7-zip \
+    supervisor \
+    tzdata \
+    zip
 
 COPY --from=builder /h5ai/build/_h5ai /usr/share/h5ai/_h5ai
 
