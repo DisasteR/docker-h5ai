@@ -1,11 +1,8 @@
-FROM node:slim as builder
+FROM node:8.16.2-alpine as builder
 
 ENV H5AI_VERSION=0.29.2
 
-RUN apt-get update \
- && apt-get --no-install-recommends -y install \
-            git-core \
-            patch \
+RUN apk add --no-cache git patch \ 
  && git clone https://github.com/lrsjng/h5ai.git \
  && cd h5ai \
  && git checkout -b ${H5AI_VERSION} tags/v${H5AI_VERSION} \
@@ -16,7 +13,7 @@ COPY class-setup.php.patch /class-setup.php.patch
 RUN patch -p1 -u -d /h5ai/build/_h5ai/private/php/core/ -i /class-setup.php.patch \
  && rm /class-setup.php.patch
 
-FROM nginx:stable-alpine
+FROM nginx:1.16.1-alpine
 
 LABEL maintainer="pad92" \
       org.label-schema.url="https://github.com/pad92/docker-h5ai/blob/master/README.md" \
