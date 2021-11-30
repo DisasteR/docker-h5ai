@@ -21,15 +21,12 @@ build_image.default:
       --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
       --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
       --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
-      -t "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME}" .
-    - docker push "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME}"
+      -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}" .
+    - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
   only:
     - master
-    - dev
   except:
     - tags
-  tags:
-    - tractor
 
 # Issue branches (^[0-9]+-.*])
 # Strip branch name branch ID
@@ -46,8 +43,6 @@ build_image.feature:
     - /^[0-9]+-.*$/
   except:
     - tags
-  tags:
-    - tractor
 
 # Non Standard branches (^[a-zA-Z]+.*)
 # Strip branch name to 128 char max
@@ -66,8 +61,6 @@ build_image.nonstd:
     - master
     - dev
     - tags
-  tags:
-    - tractor
 
 # TAGS
 build_image.tag:
@@ -81,8 +74,6 @@ build_image.tag:
     - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
   only:
     - tags
-  tags:
-    - tractor
 
 ###
 ## TAG IMAGE
@@ -98,5 +89,3 @@ tag_image.latest:
     - master
   except:
     - tags
-  tags:
-    - tractor
