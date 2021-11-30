@@ -37,8 +37,8 @@ build_image.feature:
       --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
       --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
       --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
-      -t "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME%%-*}" .
-    - docker push "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME%%-*}"
+      -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME%%-*}" .
+    - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME%%-*}"
   only:
     - /^[0-9]+-.*$/
   except:
@@ -53,8 +53,8 @@ build_image.nonstd:
       --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
       --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
       --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
-      -t "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME:0:128}" .
-    - docker push "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME:0:128}"
+      -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME:0:128}" .
+    - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME:0:128}"
   only:
     - /^[a-zA-Z]+.*$/
   except:
@@ -82,8 +82,8 @@ build_image.tag:
 tag_image.latest:
   stage: tag_latest
   script:
-    - docker pull "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME}"
-    - docker tag "${CI_REGISTRY_IMAGE}:branch-${CI_COMMIT_REF_NAME}" "${CI_REGISTRY_IMAGE}:latest"
+    - docker pull "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+    - docker tag "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}" "${CI_REGISTRY_IMAGE}:latest"
     - docker push "${CI_REGISTRY_IMAGE}:latest"
   only:
     - master
