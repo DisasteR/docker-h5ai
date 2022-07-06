@@ -30,21 +30,21 @@ RUN apk add --no-cache \
     curl \
     ffmpeg \
     imagemagick \
-    php7 \
-    php7-exif \
-    php7-fileinfo \
-    php7-fpm \
-    php7-gd \
-    php7-imagick \
-    php7-intl \
-    php7-json \
-    php7-mbstring \
-    php7-openssl \
-    php7-session \
-    php7-simplexml \
-    php7-xml \
-    php7-xmlwriter \
-    php7-zip \
+    php8 \
+    php8-exif \
+    php8-fileinfo \
+    php8-fpm \
+    php8-gd \
+    php8-pecl-imagick \
+    php8-intl \
+    php8-json \
+    php8-mbstring \
+    php8-openssl \
+    php8-session \
+    php8-simplexml \
+    php8-xml \
+    php8-xmlwriter \
+    php8-zip \
     supervisor \
     tzdata \
     zip
@@ -53,7 +53,7 @@ COPY --from=builder /h5ai/build/_h5ai /usr/share/h5ai/_h5ai
 
 COPY slash/     /
 
-RUN ln -sf /dev/stderr /var/log/php7/error.log \
+RUN ln -sf /dev/stderr /var/log/php8/error.log \
  && ln -sf /dev/stdout /var/log/nginx/access.log \
  && ln -sf /dev/stderr /var/log/nginx/error.log \
  && chown nginx:www-data /usr/share/h5ai/_h5ai/public/cache/ \
