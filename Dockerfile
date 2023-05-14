@@ -13,7 +13,7 @@ COPY class-setup.php.patch /class-setup.php.patch
 RUN patch -p1 -u -d /h5ai/build/_h5ai/private/php/core/ -i /class-setup.php.patch \
  && rm /class-setup.php.patch
 
-FROM nginx:1.22.1-alpine
+FROM nginx:1.24-alpine
 
 LABEL maintainer="pad92" \
       org.label-schema.url="https://github.com/pad92/docker-h5ai/blob/master/README.md" \
@@ -30,21 +30,21 @@ RUN apk add --no-cache \
     curl \
     ffmpeg \
     imagemagick \
-    php8 \
-    php8-exif \
-    php8-fileinfo \
-    php8-fpm \
-    php8-gd \
-    php8-pecl-imagick \
-    php8-intl \
-    php8-json \
-    php8-mbstring \
-    php8-openssl \
-    php8-session \
-    php8-simplexml \
-    php8-xml \
-    php8-xmlwriter \
-    php8-zip \
+    php81 \
+    php81-exif \
+    php81-fileinfo \
+    php81-fpm \
+    php81-gd \
+    php81-pecl-imagick \
+    php81-intl \
+    php81-json \
+    php81-mbstring \
+    php81-openssl \
+    php81-session \
+    php81-simplexml \
+    php81-xml \
+    php81-xmlwriter \
+    php81-zip \
     supervisor \
     tzdata \
     zip
@@ -53,7 +53,7 @@ COPY --from=builder /h5ai/build/_h5ai /usr/share/h5ai/_h5ai
 
 COPY slash/     /
 
-RUN ln -sf /dev/stderr /var/log/php8/error.log \
+RUN ln -sf /dev/stderr /var/log/php81/error.log \
  && ln -sf /dev/stdout /var/log/nginx/access.log \
  && ln -sf /dev/stderr /var/log/nginx/error.log \
  && chown nginx:www-data /usr/share/h5ai/_h5ai/public/cache/ \
