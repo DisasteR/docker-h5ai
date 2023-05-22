@@ -1,8 +1,8 @@
-FROM node:12-alpine as builder
+FROM node:16-alpine as builder
 
 ENV H5AI_VERSION=0.30.0
 
-RUN apk add --no-cache git patch \ 
+RUN apk add --no-cache git patch \
  && git clone https://github.com/lrsjng/h5ai.git \
  && cd h5ai \
  && git checkout -b ${H5AI_VERSION} tags/v${H5AI_VERSION} \
@@ -13,7 +13,7 @@ COPY class-setup.php.patch /class-setup.php.patch
 RUN patch -p1 -u -d /h5ai/build/_h5ai/private/php/core/ -i /class-setup.php.patch \
  && rm /class-setup.php.patch
 
-FROM nginx:1.24-alpine
+FROM nginx:1.24-alpine-slim
 
 LABEL maintainer="pad92" \
       org.label-schema.url="https://github.com/pad92/docker-h5ai/blob/master/README.md" \
@@ -35,11 +35,12 @@ RUN apk add --no-cache \
     php81-fileinfo \
     php81-fpm \
     php81-gd \
-    php81-pecl-imagick \
     php81-intl \
     php81-json \
     php81-mbstring \
+    php81-opcache \
     php81-openssl \
+    php81-pecl-imagick \
     php81-session \
     php81-simplexml \
     php81-xml \
