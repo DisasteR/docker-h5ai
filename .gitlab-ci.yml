@@ -23,8 +23,6 @@ build_image.default:
     --push
     -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
     .
-  - docker tag "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}" "${CI_REGISTRY_IMAGE}:latest"
-  - docker push "${CI_REGISTRY_IMAGE}:latest"
   only:
   - master
   except:
@@ -83,6 +81,7 @@ build_image.tag:
     --platform=linux/arm64,linux/amd64,linux/arm/v7
     --push
     -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+    -t "${CI_REGISTRY_IMAGE}:latest"
     .
   only:
   - tags
