@@ -1,81 +1,89 @@
-# You can override the included template(s) by including variable overrides
-# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
-# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
-# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
-# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
-# Note that environment variables can be set in several places
-# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
-
-# container_scanning:
-#   variables:
-#     DOCKER_IMAGE: ...
-#     DOCKER_USER: ...
-#     DOCKER_PASSWORD: ...
 image: docker:git
+
 services:
 - docker:dind
+
 stages:
 - build_image
-- tag_latest
-- test
+
 before_script:
 - docker login -u "${CI_REGISTRY_USER}" -p "${CI_JOB_TOKEN}" "${CI_REGISTRY}"
+
 build_image.default:
   stage: build_image
   script:
-  - docker build --pull --build-arg BUILD_NAME="${CI_PROJECT_NAME}" --build-arg BUILD_DATE="$(date
-    '+%FT%T.%s%z')" --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}" -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+  - docker buildx create --driver docker-container --use
+  - docker buildx build
+    --provenance=false
+    --pull
+    --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
+    --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
+    --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
+    --platform=linux/arm64,linux/amd64,linux/arm/v7
+    --push
+    -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
     .
-  - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
-  only:
-  - master
-  except:
-  - tags
-build_image.feature:
-  stage: build_image
-  script:
-  - docker build --pull --build-arg BUILD_NAME="${CI_PROJECT_NAME}" --build-arg BUILD_DATE="$(date
-    '+%FT%T.%s%z')" --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}" -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME%%-*}"
-    .
-  - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME%%-*}"
-  only:
-  - "/^[0-9]+-.*$/"
-  except:
-  - tags
-build_image.nonstd:
-  stage: build_image
-  script:
-  - docker build --pull --build-arg BUILD_NAME="${CI_PROJECT_NAME}" --build-arg BUILD_DATE="$(date
-    '+%FT%T.%s%z')" --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}" -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME:0:128}"
-    .
-  - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME:0:128}"
-  only:
-  - "/^[a-zA-Z]+.*$/"
-  except:
-  - master
-  - dev
-  - tags
-build_image.tag:
-  stage: build_image
-  script:
-  - docker build --pull --build-arg BUILD_NAME="${CI_PROJECT_NAME}" --build-arg BUILD_DATE="$(date
-    '+%FT%T.%s%z')" --build-arg BUILD_VCSREF="${CI_COMMIT_REF_NAME}" -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
-    .
-  - docker push "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
-  only:
-  - tags
-tag_image.latest:
-  stage: tag_latest
-  script:
-  - docker pull "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
   - docker tag "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}" "${CI_REGISTRY_IMAGE}:latest"
   - docker push "${CI_REGISTRY_IMAGE}:latest"
   only:
   - master
   except:
   - tags
-sast:
-  stage: test
-include:
-- template: Security/SAST.gitlab-ci.yml
-- template: Jobs/Container-Scanning.gitlab-ci.yml
+
+build_image.feature:
+  stage: build_image
+  script:
+  - docker buildx create --driver docker-container --use
+  - docker buildx build
+    --provenance=false
+    --pull
+    --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
+    --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
+    --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
+    --platform=linux/arm64,linux/amd64,linux/arm/v7
+    --push
+    -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME%%-*}"
+    .
+  only:
+  - "/^[0-9]+-.*$/"
+  except:
+  - tags
+
+build_image.nonstd:
+  stage: build_image
+  script:
+  - docker buildx create --driver docker-container --use
+  - docker buildx build
+    --provenance=false
+    --pull
+    --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
+    --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
+    --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
+    --platform=linux/arm64,linux/amd64,linux/arm/v7
+    --push
+    -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME:0:128}"
+    .
+  only:
+  - "/^[a-zA-Z]+.*$/"
+  except:
+  - master
+  - dev
+  - tags
+
+build_image.tag:
+  stage: build_image
+  script:
+  - docker buildx create --driver docker-container --use
+  - docker buildx build
+    --provenance=false
+    --pull
+    --build-arg BUILD_NAME="${CI_PROJECT_NAME}"
+    --build-arg BUILD_DATE="$(date '+%FT%T.%s%z')"
+    --build-arg BUILD_VCSREF="${CI_COMMIT_SHA:0:8}"
+    --platform=linux/arm64,linux/amd64,linux/arm/v7
+    --push
+    -t "${CI_REGISTRY_IMAGE}:${CI_COMMIT_REF_NAME}"
+    .
+  only:
+  - tags
+
