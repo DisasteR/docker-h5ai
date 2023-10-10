@@ -7,4 +7,4 @@ if [ $? -eq 0 ]; then
 fi
 
 
-/usr/sbin/nginx
+/usr/sbin/nginx -c /etc/nginx/nginx.conf
